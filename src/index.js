@@ -13,5 +13,7 @@ const XBTUSD = new SymbolWatcher('XBTUSD', 5300);
   
   setInterval(() => {
     console.log(XBTUSD.getLastPrice());
+    console.log(XBTUSD.getVariation());
   }, 2000);
+  console.log(XBTUSD.addAlarm());
 })();
