@@ -6,51 +6,43 @@ class SymbolWatcher {
     this.client = bitmex.client;
     this.symbol = symbol;
     this.entryPrice = entryPrice;
-    this.stream = null;
+    this.priceWatcher = null;
     this.initialized = false;
-    this.priceEmitter = new EventEmitter();
   }
 
-  initStream() {
-    if (this.initialized) {
-      return;
-    }
-    this.stream = this.client.addStream(this.symbol, 'instrument', (data) => {
-      this.initialized = true;
-      const lastPrice = data[0].lastPrice;
-      this.priceEmitter.emit('change', lastPrice);
-      console.log('A');
+  async startStream() {
+    return new Promise((resolve, reject) => {
+      this.priceWatcher = bitmex.createStream(this.symbol);
+      this.priceWatcher.once('change', () => {
+        this.initialized = true;
+        resolve();
+      });
     });
   }
 
   closeStream() {
-    // TODO: Test this
-    return this.stream.close();
+    // TODO:
   }
 
   getVariation(decimalPlaces = 3) {
-    if (!this.initialized) {
-      return null;
-    }
     const lastPrice = this.getLastPrice();
     const variation = utils.calcPercent(this.entryPrice, lastPrice);
     return variation.toFixed(decimalPlaces);
   }
 
   getLastPrice() {
-    if (!this.initialized) {
-      return null;
-    }
-    const data = this.client.getData([this.symbol], ['instrument'])
-    const lastPrice = data[0].lastPrice;
+    const lastPrice = bitmex.getLastPrice(this.symbol);
     return lastPrice;
+  }
+
+  getEmitter() {
+    return this.priceWatcher;
   }
 
   addAlarm(alarmName, targetPrice) {
     // create eventEmitter
-    this.priceEmitter.on('change', (price) => {
-      console.log(`Price: ${price}`);
-      
+    this.priceWatcher.on('change', (price) => {
+      console.log(`Price: ${price}`);      
     });
   }
 
