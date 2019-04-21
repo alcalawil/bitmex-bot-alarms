@@ -1,0 +1,20 @@
+{
+  "name": "bitmex-alarms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bitmex-realtime-api": "^0.4.0"
+  },
+  "devDependencies": {
+    "dotenv": "^7.0.0",
+    "nodemon": "^1.18.11"
+  }
+}
