@@ -23,6 +23,10 @@ const getLastPrice = (symbol) => {
   return lastPrice;
 }
 
+const closeStream = () => {  
+  // TODO:
+}
+
 module.exports = {
   client,
   createStream,
