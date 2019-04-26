@@ -38,6 +38,10 @@ class SymbolWatcher {
     // TODO:
   }
 
+  setEntryPrice(entryPrice) {
+    this.entryPrice = entryPrice;
+  }
+
   getVariation(decimalPlaces = 3) {
     const lastPrice = this.getLastPrice();
     const variation = utils.calcPercent(this.entryPrice, lastPrice);
@@ -51,6 +55,10 @@ class SymbolWatcher {
 
   getEmitter() {
     return this.priceWatcher;
+  }
+
+  dropAlarm(alarmName) {
+    // TODO
   }
 
   addAlarm(alarmName, comparision, targetPrice) {
