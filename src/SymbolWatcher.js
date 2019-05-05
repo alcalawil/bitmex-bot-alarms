@@ -20,7 +20,7 @@ class SymbolWatcher {
         this.initialized = true;
         resolve();
       });
-      this.priceWatcher.addListener('change', (price) => {
+      this.priceWatcher.addListener('change', price => {
         this.alarmArray = this.alarmArray.filter(alarm => {
           const priceReached = eval(alarm.condition);
           if (!priceReached) {
@@ -61,7 +61,7 @@ class SymbolWatcher {
     // TODO
   }
 
-  addAlarm(alarmName, comparision, targetPrice) {
+  addAlarm(alarmName, targetPrice, comparision) {
     const possibleComparisions = ['<', '>', '==', '<=', '>='];
     if (!possibleComparisions.includes(comparision)) {
       return false;
@@ -70,7 +70,7 @@ class SymbolWatcher {
     const alarm = {
       name: alarmName,
       condition: condition
-    }
+    };
     this.alarmArray.push(alarm);
     return true;
   }
