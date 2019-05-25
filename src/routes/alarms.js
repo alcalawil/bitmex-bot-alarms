@@ -1,12 +1,14 @@
 const express = require('express');
+const alarmService = require('../services/alarmsService');
 
 const router = express.Router();
 
 // Retrieve all active alarms
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
+  const activeAlarms = await alarmService.getAllAlarms();
   res.status(200).json({
     message: 'Mock of alarm index - Should retrieve all open alarms',
-    data: []
+    data: activeAlarms
   });
   // TODO: Import active alarms from the alarmService
 });
@@ -21,11 +23,15 @@ router.get('/:id', (req, res) => {
 });
 
 // Add new alarm
-router.post('/add', (req, res) => {
+router.post('/add', async (req, res) => {
+  // TODO: Validate comparison to avoid code injection
+  const { symbol, targetPrice, comparison } = req.body;
+  const alarmObj = await alarmService.addAlarm(symbol, targetPrice, comparison);
   res.status(201).json({
-    message: 'Mock of Create Alarm'
+    message: 'Mock of Create Alarm',
+    data: alarmObj
   });
-  // return alarmid
+  // return alarm object
   // TODO: Invoke createAlarm from the alarmService
 });
 

@@ -12,8 +12,6 @@ class AlarmsService {
       return this.watchers.get(symbol);
     }
 
-    // TODO: Add alarm object to the alarm Map
-
     const watcher = new SymbolWatcher(symbol);
     this.watchers.set(symbol, watcher);
     return watcher;
@@ -28,31 +26,40 @@ class AlarmsService {
   }
 
   getAllAlarms() {
-    return this.alarms.
+    return [...this.alarms.keys()];
   }
 
-  getAlarm(id) {
-    return this.alarms.get(id);
+  alarmExists(id) {
+    return this.alarms.has(id);
   }
 
-  addAlarm(name, symbol, targetPrice, comparison = '>=') {
+  addAlarm(symbol, targetPrice, comparison = '>=', label) {
+    // TODO: Parse comparison symbol before passing it to watcher
     const watcher = this.getWatcher(symbol);
     const id = `${symbol}_${targetPrice}`;
-    // TODO: Parse comparison symbol before passing it to watcher
+    const alarm = {
+      id,
+      symbol,
+      targetPrice,
+      comparison,
+      label
+    };
     if (!this.alarms.has(id)) {
       watcher.addAlarm(id, targetPrice, comparison);
+      //  watcher.getAlarmEmitter()
+      this.alarms.set(id, alarm);
     }
-    return {
-      id,
-      name,
-      symbol,
-      targetPrice
-    };
+    return alarm;
+  }
+
+  getSymbolFromId(id) {
+    return id.split('_')[0];
   }
 
   dropAlarm(id) {
     // TODO: Also delete watcher when it does not have associated alarms
-    // TODO: Unsubscribe from events
+    const symbol = this.getSymbolFromId(id);
+    this.watchers.delete(symbol);
     return this.alarms.delete(id);
   }
 }

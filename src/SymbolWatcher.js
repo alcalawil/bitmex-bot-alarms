@@ -1,4 +1,4 @@
-const EvenetEmitter = require('events').EventEmitter;
+const { EventEmitter } = require('events');
 const bitmex = require('./bitmexWrapper');
 const utils = require('./utils');
 
@@ -9,24 +9,24 @@ class SymbolWatcher {
     this.entryPrice = entryPrice;
     this.priceWatcher = null;
     this.initialized = false;
-    this.alarmEvents = new EvenetEmitter();
+    this.alarmEmitter = new EventEmitter();
     this.alarmArray = [];
   }
 
   async startStream() {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       this.priceWatcher = bitmex.createStream(this.symbol);
       this.priceWatcher.once('change', () => {
         this.initialized = true;
         resolve();
       });
-      this.priceWatcher.addListener('change', price => {
+      this.priceWatcher.addListener('change', () => {
         this.alarmArray = this.alarmArray.filter(alarm => {
           const priceReached = eval(alarm.condition);
           if (!priceReached) {
             return true; // Keep alarm on array
           }
-          this.alarmEvents.emit(alarm.name, alarm.condition);
+          this.alarmEmitter.emit(alarm.name, alarm.condition);
           // Remove alarm
           return false;
         });
@@ -57,26 +57,26 @@ class SymbolWatcher {
     return this.priceWatcher;
   }
 
-  dropAlarm(alarmName) {
+  dropAlarm() {
     // TODO
   }
 
-  addAlarm(alarmName, targetPrice, comparision) {
+  addAlarm(alarmId, targetPrice, comparision) {
     const possibleComparisions = ['<', '>', '==', '<=', '>='];
     if (!possibleComparisions.includes(comparision)) {
       return false;
     }
     const condition = `price ${comparision} ${targetPrice}`;
     const alarm = {
-      name: alarmName,
-      condition: condition
+      name: alarmId,
+      condition
     };
     this.alarmArray.push(alarm);
     return true;
   }
 
   getAlarmEmitter() {
-    return this.alarmEvents;
+    return this.alarmEmitter;
   }
 }
 
